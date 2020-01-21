@@ -15,3 +15,5 @@ gcc sms-flooder.c -lcurl -o sms-flooder
 ```
 sudo ./sms-flooder
 ```
+### Disclaimer
+This repository is for academic purposes, the use of this software is your responsibility.
