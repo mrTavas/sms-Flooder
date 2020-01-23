@@ -417,6 +417,6 @@ int main(void)
         sleep(10);
     }
     
-    printf("[+] %d Rounds done. Have a nice day!\n[*]\n", rounds);
+    printf("[+] %d Rounds done. Have a nice day!\n\n", rounds);
     return 0;
 }
