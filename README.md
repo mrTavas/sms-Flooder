@@ -35,7 +35,7 @@ sudo ./sms-flooder
 ```
 For Windows:
 1. Use Windows XP Service Pack 3 (SP3) compatibility mode. 
-2. Start Flooder.exe as adminitrator.
+2. Start Flooder.exe as administrator.
 -------
 ## Disclaimer
 This repository is for academic purposes, the use of this software is your responsibility.
