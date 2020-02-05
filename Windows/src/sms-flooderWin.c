@@ -1,7 +1,6 @@
 /*  Sms Flooder v1.3 
  *  Windows basic template
- *  gcc sms-flooder.c -lcurl
- *  ./sms-flooder
+ *  i686-w64-mingw32-g++ sms-flooderWin.c -lcurl
 */
 
 #include <stdio.h>      // printf();
